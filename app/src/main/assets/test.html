@@ -1,0 +1,27 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<script type="text/javascript">
+        <!--/* This function is invoked by the activity -->
+            <!--<iframe src="yourscheme://www.baidu.com?target=1&resValue=30000000000604100554" height="500">-->
+
+        <!--</iframe> */-->
+        function showQrCode(qrcode) {
+            alert(qrcode);
+        }
+        function href(){
+        //	window.location="yourscheme://www.baidu.com?target=1&resValue=30000000000604100554"
+			 window.location = "intent://www.baidu.com?target=1&resValue=30000000000604100554"+ "/#Intent;scheme=yourscheme;package=yourpackagename;end"
+        }
+		//window.href();
+    </script>
+</head>
+<body>
+<a  onClick="window.checkIsWifiConnected()">获取WiFi状态</a><br/>
+<a  onClick=window.browser.startQRScan()>扫描二维码</a><br/>
+<a 	onClick="window.goFeedBack(11223344)">意见反馈</a><br/>
+<a 	onClick="window.href()">打开APP</a><br/>
+<input type="file">上传</input>
+</body>
+</html>
