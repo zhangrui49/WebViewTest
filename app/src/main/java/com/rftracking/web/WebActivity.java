@@ -16,7 +16,7 @@ import android.webkit.WebView;
 
 public class WebActivity extends AppCompatActivity {
     private WebView mWebView;
-    private static final int CODE_PICK_PHOTO=1245;
+    private static final int CODE_PICK_PHOTO = 1245;
     private ValueCallback<Uri> mUploadMessage;
 
     private ValueCallback<Uri[]> mValueCallback;
@@ -39,10 +39,19 @@ public class WebActivity extends AppCompatActivity {
         mWebView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
-
                 mValueCallback = filePathCallback;
-                startActivityForResult(createDefaultOpenableIntent(), CODE_PICK_PHOTO);
-                //   startActivityForResult(new Intent("android.media.action.IMAGE_CAPTURE"), TAKE_PICTURE);
+                String[] types=fileChooserParams.getAcceptTypes();
+                if(types!=null&&types.length>0){
+                    if(types[0].contains("image")){
+                        startActivityForResult(createCameraIntent(), CODE_PICK_PHOTO);
+                    }else if(types[0].contains("audio")){
+                        startActivityForResult(createRecordIntent(), CODE_PICK_PHOTO);
+                    }else if(types[0].contains("video")){
+                        startActivityForResult(createVideoIntent(), CODE_PICK_PHOTO);
+                    }
+                }else {
+                    return false;
+                }
                 return true;
             }
 
@@ -55,7 +64,7 @@ public class WebActivity extends AppCompatActivity {
     }
 
     private Intent createCameraIntent() {
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+      //  Intent cameraIntent = ;
 //        File externalDataDir = Environment
 //                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
 //        File cameraDataDir = new File(externalDataDir.getAbsolutePath()
@@ -66,7 +75,15 @@ public class WebActivity extends AppCompatActivity {
 //        cameraIntent.putExtra(MediaStore.Images.Media.ORIENTATION, 0);
 //        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT,
 //                Uri.fromFile(new File(mCameraFilePath)));
-        return cameraIntent;
+        return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    }
+
+    private Intent createVideoIntent() {
+        return new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+    }
+
+    private Intent createRecordIntent() {
+        return new Intent(MediaStore.Audio.Media.RECORD_SOUND_ACTION);
     }
 
     private Intent createDefaultOpenableIntent() {
@@ -74,21 +91,27 @@ public class WebActivity extends AppCompatActivity {
         i.addCategory(Intent.CATEGORY_OPENABLE);
         i.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 "image/*");
-        Intent chooser = createChooserIntent(createCameraIntent());
-        chooser.putExtra(Intent.EXTRA_INTENT, i);
-        return chooser;
+        //  Intent chooser = createChooserIntent(createCameraIntent());
+        // chooser.putExtra(Intent.EXTRA_INTENT, i);
+        return i;
     }
 
-    private Intent createChooserIntent(Intent... intents) {
-        Intent chooser = new Intent(Intent.ACTION_CHOOSER);
-        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents);
-        chooser.putExtra(Intent.EXTRA_TITLE, "选择图片");
-        return chooser;
-    }
+//    private Intent createChooserIntent(Intent... intents) {
+//        Intent chooser = new Intent(Intent.ACTION_CHOOSER);
+//        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents);
+//        chooser.putExtra(Intent.EXTRA_TITLE, "选择图片");
+//        return chooser;
+//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != Activity.RESULT_OK) {
+            if (mUploadMessage != null) {
+                mUploadMessage.onReceiveValue(null);
+            }
+            if (mValueCallback != null) {
+                mValueCallback.onReceiveValue(null);
+            }
             return;
         }
         switch (requestCode) {
@@ -140,7 +163,7 @@ public class WebActivity extends AppCompatActivity {
                         mWebView.evaluateJavascript("showQrCode('" + qrCode + "')", new ValueCallback<String>() {
                             @Override
                             public void onReceiveValue(String value) {
-                                Log.e("webview",value);
+                                Log.e("webview", value);
                             }
                         });
                     } else {

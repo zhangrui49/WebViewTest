@@ -2,7 +2,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<script type="text/javascript">
+    <script type="text/javascript">
         <!--/* This function is invoked by the activity -->
             <!--<iframe src="yourscheme://www.baidu.com?target=1&resValue=30000000000604100554" height="500">-->
 
@@ -15,13 +15,30 @@
 			 window.location = "intent://www.baidu.com?target=1&resValue=30000000000604100554"+ "/#Intent;scheme=yourscheme;package=yourpackagename;end"
         }
 		//window.href();
+		window.onload=function(){
+		document.getElementById('hiddenFile').style.visibility="hidden";
+		}
+
+        function takePhoto(){
+        document.getElementById('hiddenFile').click();
+        }
+
     </script>
 </head>
 <body>
-<a  onClick="window.checkIsWifiConnected()">获取WiFi状态</a><br/>
-<a  onClick=window.browser.startQRScan()>扫描二维码</a><br/>
-<a 	onClick="window.goFeedBack(11223344)">意见反馈</a><br/>
-<a 	onClick="window.href()">打开APP</a><br/>
-<input type="file">上传</input>
+<a onClick="window.checkIsWifiConnected()">获取WiFi状态</a><br/>
+<a onClick=window.browser.startQRScan()>扫描二维码</a><br/>
+<a onClick="window.goFeedBack(11223344)">意见反馈</a><br/>
+<a onClick="window.href()">打开APP</a><br/>
+<form accept-charset="utf-8" enctype="multipart/form-data">
+    <input type="file" name="拍照" value="拍照" accept="image/*"/>
+    <input type="file" name="录音" value="录音" accept="audio/*"/>
+    <input type="file" name="录像" value="录像" accept="video/*"/>
+    <input id='showSrc' type='text'/><input type='button' value='拍照'
+                                            OnClick="takePhoto()"/>
+    <input id='hiddenFile' type='file' accept="image/*"
+           OnChange="document.getElementById('showSrc').value=this.value"/>
+    <input type="submit" value="上传">
+</form>
 </body>
 </html>
