@@ -14,9 +14,13 @@ import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
+import static android.app.Activity.RESULT_OK;
+
 public class WebActivity extends AppCompatActivity {
     private WebView mWebView;
     private static final int CODE_PICK_PHOTO = 1245;
+    private static final int CODE_RECORD = 1246;
+    private static final int CODE_PICK_VIDEO= 1247;
     private ValueCallback<Uri> mUploadMessage;
 
     private ValueCallback<Uri[]> mValueCallback;
@@ -45,9 +49,9 @@ public class WebActivity extends AppCompatActivity {
                     if(types[0].contains("image")){
                         startActivityForResult(createCameraIntent(), CODE_PICK_PHOTO);
                     }else if(types[0].contains("audio")){
-                        startActivityForResult(createRecordIntent(), CODE_PICK_PHOTO);
+                        startActivityForResult(createRecordIntent(), CODE_RECORD);
                     }else if(types[0].contains("video")){
-                        startActivityForResult(createVideoIntent(), CODE_PICK_PHOTO);
+                        startActivityForResult(createVideoIntent(), CODE_PICK_VIDEO);
                     }
                 }else {
                     return false;
@@ -64,17 +68,6 @@ public class WebActivity extends AppCompatActivity {
     }
 
     private Intent createCameraIntent() {
-      //  Intent cameraIntent = ;
-//        File externalDataDir = Environment
-//                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-//        File cameraDataDir = new File(externalDataDir.getAbsolutePath()
-//                + File.separator + "rftracking");
-//        cameraDataDir.mkdirs();
-//        String mCameraFilePath = cameraDataDir.getAbsolutePath()
-//                + File.separator + System.currentTimeMillis() + ".jpg";
-//        cameraIntent.putExtra(MediaStore.Images.Media.ORIENTATION, 0);
-//        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-//                Uri.fromFile(new File(mCameraFilePath)));
         return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     }
 
@@ -105,7 +98,7 @@ public class WebActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != Activity.RESULT_OK) {
+        if (resultCode != RESULT_OK) {
             if (mUploadMessage != null) {
                 mUploadMessage.onReceiveValue(null);
             }
@@ -114,14 +107,14 @@ public class WebActivity extends AppCompatActivity {
             }
             return;
         }
-        switch (requestCode) {
-            case CODE_PICK_PHOTO:
-                uploadImg(resultCode, data);
-                break;
-        }
+//        switch (requestCode) {
+//            case CODE_PICK_PHOTO:
+                upload(resultCode, data);
+            //    break;
+       // }
     }
 
-    private void uploadImg(int resultCode, Intent intent) {
+    private void upload(int resultCode, Intent intent) {
 
         if (mUploadMessage != null) {
 
@@ -138,7 +131,7 @@ public class WebActivity extends AppCompatActivity {
             Uri[] uris = new Uri[1];
             if (intent.getData() == null) {
                 uris[0] = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), (Bitmap) intent.getExtras().get("data"), null, null));
-                ;
+
             } else {
                 uris[0] = intent.getData();
             }
